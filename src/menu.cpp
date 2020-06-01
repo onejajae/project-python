@@ -4,7 +4,6 @@
 
 #include <string>
 #include <vector>
-#include <ctime>
 
 #include "menu.h"
 #include "snake.h"

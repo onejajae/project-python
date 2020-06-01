@@ -4,4 +4,4 @@
 > `$ make`
 
 ## 실행
->  `$ ./bin/SnakeGame`
+>  `$ ./SnakeGame`
