@@ -6,7 +6,7 @@
 #include <vector>
 
 #include "menu.h"
-#include "snake.h"
+#include "game.h"
 
 int init()
 {
@@ -38,7 +38,7 @@ int menuUI()
   while (1) {
     for (int i=0; i<choices.size(); i++) {
       if (i == highlight) wattron(menuwin, A_REVERSE);
-      mvwprintw(menuwin, i+1, 1, choices[i].c_str());
+      mvwprintw(menuwin, i+1, 2, choices[i].c_str());
       wattroff(menuwin, A_REVERSE);
     }
     choice = wgetch(menuwin);
@@ -62,6 +62,7 @@ int menuUI()
   }
   wclear(menuwin);
   delwin(menuwin);
+  refresh();
   return highlight;
 }
 
@@ -70,7 +71,8 @@ void run()
   int select = menuUI();
   if (select == 0) {
     clear();
-    snakeClass snake;
-    snake.start();
+    refresh();
+    Game snakeGame(true);
+    while (snakeGame.start()){}
   }
 }

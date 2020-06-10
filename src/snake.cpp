@@ -1,8 +1,6 @@
-#include "snake.h"
-#include "ncurses.h"
 #include <random>
-#include "unistd.h"
-
+#include "snake.h"
+using namespace std;
 /*
 TODO LIST
 -make a menu
@@ -12,9 +10,9 @@ TODO LIST
 */
 
 //constructor
-snakePart::snakePart(int col, int row) {
-    x = col;
+snakePart::snakePart(int row, int col) {
     y = row;
+    x = col;
 }
 //constructor
 snakePart::snakePart() {
@@ -22,67 +20,69 @@ snakePart::snakePart() {
     y = 0;
 }
 
-void snakeClass::putGrowthItem(int n) {
-    while(1) {
-        int tmpx=(rand()%(maxWidth-1)) +1;
-        int tmpy=(rand()%(maxHeight-1)) +1;
-        for(int i=0; i<snake.size(); i++) {
-            if(snake[i].x==tmpx && snake[i].y==tmpy) continue;
-        }
-
-        for(int i=0; i<3;i++){
-          if(tmpx==poisonItem[i].x&&tmpy==poisonItem[i].y) continue;
-        }
-
-        growthItem[n].x = tmpx;
-        growthItem[n].y = tmpy;
-        break;
-    }
-    move(growthItem[n].y,growthItem[n].x);
-    addch(growthItemchar);
-    refresh();
+int snakeClass::sizeofsnake(){
+  return snake.size();
 }
 
-void snakeClass::putPoisonItem(int n) {
-    while(1) {
-        int tmpx=(rand()%(maxWidth-1)) +1;
-        int tmpy=(rand()%(maxHeight-1)) +1;
-        for(int i=0; i<snake.size(); i++) {
-            if(snake[i].x==tmpx && snake[i].y==tmpy) continue;
-        }
+void snakeClass::putGrowthItem() {
+  while(1) {
+      int y=(rand()%(maxHeight-1)) +1;
+      int x=(rand()%(maxWidth-1)) +1;
 
-        for(int i=0; i<3;i++){
-          if(tmpx==growthItem[i].x&&tmpy==growthItem[i].y) continue;
-        }
-
-        poisonItem[n].x = tmpx;
-        poisonItem[n].y = tmpy;
-        break;
-    }
-    move(poisonItem[n].y,poisonItem[n].x);
-    addch(poisonItemchar);
-    refresh();
+      if(snakemap[y][x]!=0) continue;
+      growthItem.push_back(snakePart(y,x));
+      snakemap[y][x]=5;
+      itemsum++;
+      break;
+  }
 }
 
-//아직 구현 못함
+void snakeClass::putPoisonItem() {
+  while(1) {
+      int y=(rand()%(maxHeight-1)) +1;
+      int x=(rand()%(maxWidth-1)) +1;
+
+      if(snakemap[y][x]!=0) continue;
+      poisonItem.push_back(snakePart(y,x));
+      snakemap[y][x]=6;
+      itemsum++;
+      break;
+  }
+}
+
+void snakeClass::makegate() {
+  while(1){
+    int tempa = rand()&wallvt.size();
+    int tempb = rand()%wallvt.size();
+    if(tempa==tempb) continue;
+
+    gate[0] = wallvt[tempa];
+    gate[1] = wallvt[tempb];
+    snakemap[gate[0].y][gate[0].x] = 7;
+    snakemap[gate[1].y][gate[1].x] = 7;
+    break;
+  }
+}
+
 bool snakeClass::collision() {
     //벽에 머리가 부딪히는 경우
-    if(snake[0].x==0 || snake[0].x==maxWidth ||
-     snake[0].y==0 || snake[0].y==maxHeight) return true;
+    for(int i=0;i<wallvt.size();i++){
+      if(snake[0].x==wallvt[i].x && snake[0].y==wallvt[i].y) return true;
+    }
 
+    //자기 몸에 부딪히는 경우
     for(int i=2; i<snake.size(); i++) {
         if(snake[0].x==snake[i].x && snake[0].y == snake[i].y) {
             return true;
         }
     }
 
-
     //growthItem 먹었을 때
-    for(int j=0; j<2; j++) {
-        if(snake[0].x==growthItem[j].x && snake[0].y==growthItem[j].y) {
+    for(int i=0; i<growthItem.size(); i++) {
+        if(snake[0].x==growthItem[i].x && snake[0].y==growthItem[i].y) {
             getgrowth = true;
-            putGrowthItem(j);
             points+=10;
+            itemsum--;
             break;
         }
         else {
@@ -91,11 +91,11 @@ bool snakeClass::collision() {
     }
 
     //poisonItem 먹었을 때
-    for(int j=0; j<2; j++) {
-        if(snake[0].x==poisonItem[j].x && snake[0].y==poisonItem[j].y) {
+    for(int i=0; i<poisonItem.size(); i++) {
+        if(snake[0].x==poisonItem[i].x && snake[0].y==poisonItem[i].y) {
             getpoison = true;
-            putPoisonItem(j);
             points-=10;
+            itemsum--;
             break;
         }
         else {
@@ -104,169 +104,185 @@ bool snakeClass::collision() {
     }
 
     //뱀의 몸의 길이가 3보다 작아질 경우
-    if(snake.size()<3) return true;
+    if(sizeofsnake()<3) return true;
 
     return false;
 }
 
-void snakeClass::movesnake() {
+void snakeClass::movesnake(int n) {
 
-    int tmp=getch();
-    switch (tmp)
+    switch (n)
     {
-    case KEY_LEFT:
+    case TURN_LEFT: //왼쪽
         if(direction != 'r') {
             direction='l';
         }
         break;
-    case KEY_UP:
+    case TURN_UP://위
         if(direction != 'd') {
             direction = 'u';
         }
         break;
-    case KEY_DOWN:
+    case TURN_DOWN://아래
         if(direction != 'u') {
             direction = 'd';
         }
         break;
-    case KEY_RIGHT:
+    case TURN_RIGHT://오른쪽
         if(direction != 'l') {
             direction = 'r';
         }
         break;
-    case KEY_BACKSPACE:
-        direction = 'q';
-        break;
     }
 
-    if(!getgrowth ) {
-        move(snake[snake.size()-1].y, snake[snake.size()-1].x);
-        addch(' ');
-        refresh();
-        snake.pop_back();
-    }
-    if(getpoison) {
-      move(snake[snake.size()-1].y, snake[snake.size()-1].x);
-      addch(' ');
-      refresh();
-      snake.pop_back();
-    }
     if(direction == 'l') {
-        snake.insert(snake.begin(), snakePart(snake[0].x-1,snake[0].y));
+      snake.insert(snake.begin(), snakePart(snake[0].y,snake[0].x-1));
     }
     else if(direction =='r') {
-        snake.insert(snake.begin(), snakePart(snake[0].x+1,snake[0].y));
+      snake.insert(snake.begin(), snakePart(snake[0].y,snake[0].x+1));
     }
     else if(direction == 'u') {
-        snake.insert(snake.begin(), snakePart(snake[0].x,snake[0].y-1));
+      snake.insert(snake.begin(), snakePart(snake[0].y-1,snake[0].x));
     }
     else if(direction == 'd') {
-        snake.insert(snake.begin(), snakePart(snake[0].x,snake[0].y+1));
+      snake.insert(snake.begin(), snakePart(snake[0].y+1,snake[0].x));
     }
 
-    for(int i=0; i<snake.size();i++) {
-        move(snake[i].y, snake[i].x);
-        if(i==0) addch(headPartchar);
-        else addch(bodyPartchar);
+
+    for(int i=0; i<snake.size(); i++){
+      if(i==0) snakemap[snake[i].y][snake[i].x]=3;
+      else snakemap[snake[i].y][snake[i].x]=4;
     }
-    refresh();
+
+    //grow아이템
+    if(!getgrowth){//안 먹었을 때
+      snakemap[snake.back().y][snake.back().x] = 0;
+      snake.pop_back();
+    }else{//먹엇을 때
+      for(int i =0; i<growthItem.size();i++){
+        if(growthItem[i].y==snake[0].y && growthItem[i].x==snake[0].x) growthItem.erase(growthItem.begin()+i);
+      }
+    }
+
+    //poison아이템
+    if(getpoison){//먹었을 때
+      snakemap[snake.back().y][snake.back().x] = 0;
+      snake.pop_back();
+      for(int i =0; i<poisonItem.size();i++){
+        if(poisonItem[i].y==snake[0].y && poisonItem[i].x==snake[0].x) poisonItem.erase(growthItem.begin()+i);
+      }
+    }
+
+    while(1){
+      if(itemsum<3){
+        int k=rand()%2;
+        switch (k) {
+          case 0:
+          putGrowthItem();
+          break;
+
+          case 1:
+          putPoisonItem();
+          break;
+        }
+      }else break;
+    }
 }
 
 snakeClass::snakeClass() {
-    initscr();
-    resize_term(100,100);
-    nodelay(stdscr,true); //the getch() not wait until the user press a key
-    keypad(stdscr,true);
-    noecho();
-    curs_set(0);
-
-    maxWidth = 60;
+    maxWidth = 30;
     maxHeight = 30;
 
-    //아이템 위치 초기화
-    for(int k=0; k<=1; k++) {
-        growthItem[k].x = 0;
-        growthItem[k].y = 0;
-        poisonItem[k].x = 0;
-        poisonItem[k].y = 0;
+    //배열 초기화
+    for(int i=0; i<maxHeight; i++){
+      for(int j=0; j<maxWidth; j++){
+        snakemap[i][j] = 0;
+      }
     }
 
-    //맵, 뱀 모양 초기화
-    headPartchar = 'o';
-    bodyPartchar = '*';
-    wallchar = '§';
-    immuneWallchar = '#';
-    growthItemchar = 'O';
-    poisonItemchar = 'X';
+    //아이템개수 초기화
 
+    // //맵, 뱀 모양 초기화
+    // airchar = ' ';
+    // headPartchar = 'o';
+    // bodyPartchar = '*';
+    // wallchar = '§';
+    // immuneWallchar = '#';
+    // growthItemchar = 'O';
+    // poisonItemchar = 'X';
+    // gatechar = '0';
+
+    //snake 생성
     for(int i=0; i<3; i++) {
-        snake.push_back(snakePart(maxWidth/2+i, maxHeight/2));
+        snake.push_back(snakePart(maxHeight/2, maxWidth/2+i));
     }
 
+
+    snakesize = snake.size();
+    itemsum =0;
     points = 0;
     ticks = 200000;
     getgrowth = false;
     getpoison = false;
-    direction ='l'; //default is left
+    direction ='u'; //default is left
     srand(time(NULL));
 
     //make Wall and immuneWall
-    for(int i=0; i<maxWidth+1; i++) {//아래
-      move(maxHeight,i);
-      if(i==0||i==maxWidth) addch(immuneWallchar);
-      else {addch(wallchar);}
+    for(int j=0; j<maxWidth; j++) { //위
+      if(j==0||j==maxWidth-1) snakemap[0][j] = 2;
+      else {
+        snakemap[0][j] = 1;
+        wallvt.push_back(snakePart(0,j));
+      }
     }
-    for(int j=0; j<maxHeight+1; j++) {//왼쪽
-      move(j,0);
-      if(j==0||j==maxHeight) addch(immuneWallchar);
-      else {addch(wallchar);}
+    for(int j=0; j<maxWidth; j++) { //아래
+      if(j==0||j==maxWidth-1) snakemap[maxHeight-1][j]=2;
+      else {
+        snakemap[maxHeight-1][j]=1;
+        wallvt.push_back(snakePart(maxHeight-1,j));
+      }
     }
-    for(int i=0; i<maxWidth+1; i++) {//위
-      move(0,i);
-      if(i==0||i==maxWidth) addch(immuneWallchar);
-      else {addch(wallchar);}
+    for(int i=0; i<maxHeight; i++) { //왼쪽
+      if(i==0||i==maxHeight-1) snakemap[i][0]=2;
+      else {
+        snakemap[i][0]=1;
+        wallvt.push_back(snakePart(i,0));
+      }
     }
-    for(int j=0; j<maxHeight+1; j++) {//오른쪽
-      move(j,maxWidth);
-      if(j==0||j==maxHeight) addch(immuneWallchar);
-      else {addch(wallchar);}
+    for(int i=0; i<maxHeight; i++) { //오른쪽
+      if(i==0||i==maxHeight-1) {
+        snakemap[i][maxWidth-1] = 2;
+      }else {
+        snakemap[i][maxWidth-1] = 1;
+        wallvt.push_back(snakePart(i,maxWidth-1));
+      }
     }
 
 
-    //draw snake
-    for(int k=0; k<snake.size(); k++) {
-        move(snake[k].y, snake[k].x);
-        if(k == 0) addch(headPartchar);
-        else addch(bodyPartchar);
+    //make snake
+    for(int i=0; i<snake.size(); i++) {
+        if(i == 0) snakemap[snake[i].y][snake[i].x] = 3;
+        else snakemap[snake[i].y][snake[i].x] = 4;
     }
-    // printw("%d",points);
-    putGrowthItem(0);
-    putGrowthItem(1);
-    putPoisonItem(0);
-    putPoisonItem(1);
-    refresh();
+
+    //putitem
+    putGrowthItem();
+    for(int i=0; i<2; i++) {
+      int k=rand()%2;
+      switch (k) {
+        case 0:
+        putGrowthItem();
+        break;
+
+        case 1:
+        putPoisonItem();
+        break;
+      }
+    }
+
+    makegate();
+
 }
 
 snakeClass::~snakeClass() {
-    nodelay(stdscr, false);
-    getch();
-    endwin();
-}
-
-void snakeClass::start() {
-    while(true) {
-        if(collision()) {
-            // move(maxWidth/2-4, maxHeight/2);
-            move(12,36);
-            printw("Game Over");
-            break;
-        }
-
-        movesnake();
-        if(direction=='q') {
-            break;
-        }
-        usleep(ticks); //ticks 마이크로초 동안 대기
-    }
-
 }
