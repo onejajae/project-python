@@ -1,6 +1,6 @@
 #include <random>
 #include "snake.h"
-using namespace std;
+
 /*
 TODO LIST
 -make a menu
@@ -190,8 +190,8 @@ void snakeClass::movesnake(int n) {
 }
 
 snakeClass::snakeClass() {
-    maxWidth = 30;
-    maxHeight = 30;
+    maxWidth = MAX_WIDTH;
+    maxHeight = MAX_HEIGHT;
 
     //배열 초기화
     for(int i=0; i<maxHeight; i++){

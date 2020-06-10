@@ -19,6 +19,9 @@
 #define POISON_ITEM 6
 #define GATE 7
 
+#define MAX_HEIGHT 30
+#define MAX_WIDTH 30
+
 struct snakePart
 {
     int x,y;
@@ -34,7 +37,7 @@ class snakeClass {
     bool getgrowth, getpoison;
     int ticks;
     int snakesize;
-    int snakemap[30][30];
+    int snakemap[MAX_HEIGHT][MAX_WIDTH];
     int itemsum;
     snakePart gate[2];
 
