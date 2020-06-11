@@ -13,9 +13,10 @@ Game::Game(bool debug) : debug(debug)
   keypad(stdscr,true);
 
   mainBoard = newwin(32, 62, 1, 1);
-  stageBoard = newwin(4, 30, 2, 65);
-  scoreBoard = newwin(7, 30, 7, 65);
-  missionBoard = newwin(7, 30, 16, 65);
+  stageBoard = newwin(4, 30, 2, 62);
+  scoreBoard = newwin(7, 30, 7, 62);
+  missionBoard = newwin(7, 30, 16, 62);
+  fpsBoard = newwin(1,30, 0, 62);
   
   //box(mainBoard, 0, 0);
   box(stageBoard, 0, 0);
@@ -26,9 +27,10 @@ Game::Game(bool debug) : debug(debug)
   wrefresh(stageBoard);
   wrefresh(scoreBoard);
   wrefresh(missionBoard);
+  wrefresh(fpsBoard);
 
   if (debug) {
-    debugBoard = newwin(32, 32, 1, 95);
+    debugBoard = newwin(32, 32, 1, 93);
     box(debugBoard, 0, 0);
     wrefresh(debugBoard);
   }
@@ -73,23 +75,31 @@ Game::~Game()
 bool Game::start()
 {
   render();
+  clock_t start_time = clock();
+  clock_t end_time = clock();
+  clock_t wait_time = clock();
+  unsigned long long loop_count = 0;
+  double FPS = 0;
   while (!snake.collision()) {
-    
-        nodelay(stdscr, false);
+    if (debug) nodelay(stdscr, false);
     int input = getch();
     switch (input)
     {
       case KEY_LEFT:
         snake.movesnake(TURN_LEFT);
+          wait_time = clock();
         break;
       case KEY_UP:
         snake.movesnake(TURN_UP);
+          wait_time = clock();
         break;
       case KEY_DOWN:
         snake.movesnake(TURN_DOWN);
+          wait_time = clock();
         break;
       case KEY_RIGHT:
         snake.movesnake(TURN_RIGHT);
+          wait_time = clock();
         break;
       case KEY_BACKSPACE:
         nodelay(stdscr, false);
@@ -97,11 +107,20 @@ bool Game::start()
         nodelay(stdscr, true);
         break;
       default:
-        snake.movesnake();
+        if (clock()-wait_time > 500000) {
+          snake.movesnake();
+          wait_time = clock();
+        }
         break;
     }
-    render();
+    render(); 
     updateBoard();
+
+    end_time = clock();
+    loop_count++;
+    FPS = 1.0/((((double)(end_time-start_time))/((double)loop_count))/(double)(CLOCKS_PER_SEC));
+    mvwprintw(fpsBoard, 0, 4, "FPS: %.2f", FPS);
+    wrefresh(fpsBoard);
   }
 }
 
@@ -190,17 +209,17 @@ void Game::updateBoard()
   mvwprintw(stageBoard, 1, 4, "STAGE %d", 1);
   mvwprintw(stageBoard, 2, 4, "SCORE: %d", 100);
 
-  mvwprintw(scoreBoard, 1, 1, "Score Board");
-  mvwprintw(scoreBoard, 2, 1, "B: %d / %d", 3, 20);
-  mvwprintw(scoreBoard, 3, 1, "+: %d", 5);
-  mvwprintw(scoreBoard, 4, 1, "-: %d", 5);
-  mvwprintw(scoreBoard, 5, 1, "G: %d", 5);
+  mvwprintw(scoreBoard, 1, 10, "Score Board");
+  mvwprintw(scoreBoard, 2, 4, "B: %d / %d", 3, 20);
+  mvwprintw(scoreBoard, 3, 4, "+: %d", 5);
+  mvwprintw(scoreBoard, 4, 4, "-: %d", 5);
+  mvwprintw(scoreBoard, 5, 4, "G: %d", 5);
 
-  mvwprintw(missionBoard, 1, 1, "Missions");
-  mvwprintw(missionBoard, 2, 1, "B: %d", 3/20);
-  mvwprintw(missionBoard, 3, 1, "+: %d", 5);
-  mvwprintw(missionBoard, 4, 1, "-: %d", 5);
-  mvwprintw(missionBoard, 5, 1, "G: %d", 5);
+  mvwprintw(missionBoard, 1, 11, "Missions");
+  mvwprintw(missionBoard, 2, 4, "B: %d", 3/20);
+  mvwprintw(missionBoard, 3, 4, "+: %d", 5);
+  mvwprintw(missionBoard, 4, 4, "-: %d", 5);
+  mvwprintw(missionBoard, 5, 4, "G: %d", 5);
 
   wrefresh(stageBoard);
   wrefresh(scoreBoard);

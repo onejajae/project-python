@@ -224,7 +224,7 @@ snakeClass::snakeClass() {
     ticks = 200000;
     getgrowth = false;
     getpoison = false;
-    direction ='u'; //default is left
+    direction ='l'; //default is left
     srand(time(NULL));
 
     //make Wall and immuneWall

@@ -12,6 +12,7 @@ class Game
     WINDOW* scoreBoard;
     WINDOW* missionBoard;
     WINDOW* debugBoard;
+    WINDOW* fpsBoard;
     snakeClass snake;
     bool debug;
 

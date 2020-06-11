@@ -3,7 +3,7 @@
 
 int init();
 
-void run();
+void run(bool debug=false);
 
 int menuUI();
 

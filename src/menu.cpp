@@ -24,12 +24,26 @@ int menuUI()
 
   getmaxyx(stdscr, yMax, xMax);
 
-  WINDOW* menuwin = newwin(4, 30, yMax/2-2, xMax/2-15);
+  WINDOW* menuwin = newwin(4, 30, yMax/2+2, xMax/2-15);
   box(menuwin, 0, 0);
   refresh();
   wrefresh(menuwin);
 
   keypad(menuwin, true);
+
+
+  std::vector<std::string> logo = { "    ____             __     __                 ",
+                                    "   / __ \\   __  __  / /_   / /_   ____    ____ ",
+                                    "  / /_/ /  / / / / / __/  / __ \\ / __ \\  / __ \\",
+                                    " / ____/  / /_/ / / /_   / / / // /_/ / / / / /",
+                                    "/_/       \\__, /  \\__/  /_/ /_/ \\____/ /_/ /_/ ",
+                                    "         /____/                                "};
+
+  for (int i=0; i<logo.size(); i++) {
+    mvprintw(yMax/2 - 5 + i, xMax/2 - 24, logo[i].c_str());
+  }
+  refresh();
+
 
   std::vector<std::string> choices = {"Game Start", "Quit"};
   int choice;
@@ -66,13 +80,13 @@ int menuUI()
   return highlight;
 }
 
-void run()
+void run(bool debug)
 {
   int select = menuUI();
   if (select == 0) {
     clear();
     refresh();
-    Game snakeGame(true);
+    Game snakeGame(debug);
     while (snakeGame.start()){}
   }
 }
