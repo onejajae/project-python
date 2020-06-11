@@ -27,6 +27,9 @@ class Game
 
     void updateBoard();
 
+    bool askRestart();
+    bool askResume();
+
     const char WALL_CHAR = (char)219;
 };
 

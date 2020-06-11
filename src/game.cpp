@@ -74,14 +74,17 @@ Game::~Game()
 
 bool Game::start()
 {
+  int stageNum = 1;
   render();
+
   clock_t start_time = clock();
   clock_t end_time = clock();
   clock_t wait_time = clock();
   unsigned long long loop_count = 0;
   double FPS = 0;
+
   while (!snake.collision()) {
-    if (debug) nodelay(stdscr, false);
+    nodelay(stdscr, !debug);
     int input = getch();
     switch (input)
     {
@@ -95,16 +98,15 @@ bool Game::start()
         break;
       case KEY_DOWN:
         snake.movesnake(TURN_DOWN);
-          wait_time = clock();
+        wait_time = clock();
         break;
       case KEY_RIGHT:
         snake.movesnake(TURN_RIGHT);
           wait_time = clock();
         break;
       case KEY_BACKSPACE:
-        nodelay(stdscr, false);
-        getch();
-        nodelay(stdscr, true);
+        if (askResume()) nodelay(stdscr, true);
+        else return false;
         break;
       default:
         if (clock()-wait_time > 500000) {
@@ -119,9 +121,16 @@ bool Game::start()
     end_time = clock();
     loop_count++;
     FPS = 1.0/((((double)(end_time-start_time))/((double)loop_count))/(double)(CLOCKS_PER_SEC));
-    mvwprintw(fpsBoard, 0, 4, "FPS: %.2f", FPS);
+    mvwprintw(fpsBoard, 0, 5, "FPS: %.2f", FPS);
     wrefresh(fpsBoard);
-  }
+
+    // if (snake.isMissionComplete()) {
+    //   stageNum++;
+    //   snake.newStage(stageNum);
+    // }
+  } // end of game loop
+
+  return askRestart();
 }
 
 void Game::drawPoint(int y, int x, int TYPE)
@@ -207,7 +216,7 @@ void Game::debug_snake()
 void Game::updateBoard()
 {
   mvwprintw(stageBoard, 1, 4, "STAGE %d", 1);
-  mvwprintw(stageBoard, 2, 4, "SCORE: %d", 100);
+  mvwprintw(stageBoard, 2, 4, "SCORE: %d", snake.points);
 
   mvwprintw(scoreBoard, 1, 10, "Score Board");
   mvwprintw(scoreBoard, 2, 4, "B: %d / %d", 3, 20);
@@ -243,4 +252,95 @@ void Game::updateBoard()
   // wrefresh(stageBoard);
   // wrefresh(scoreBoard);
   // wrefresh(missionBoard);
+}
+
+bool Game::askRestart()
+{
+  WINDOW* gameoverWin = newwin(4, 21, 13, 20);
+  box(gameoverWin, 0, 0);
+  wrefresh(gameoverWin);
+
+  std::vector<std::string> choices = {"Restart", "Quit"};
+  int choice;
+  int highlight=0;
+
+  mvwprintw(gameoverWin, 0, 3, "GAME OVER");
+
+  while (1) {
+    for (int i=0; i<choices.size(); i++) {
+      if (i == highlight) wattron(gameoverWin, A_REVERSE);
+      mvwprintw(gameoverWin, i+1, 2, choices[i].c_str());
+      wattroff(gameoverWin, A_REVERSE);
+    }
+    wrefresh(gameoverWin);
+    nodelay(stdscr, false);
+    choice = getch();
+
+    switch(choice) {
+      case KEY_UP:
+        highlight--;
+        if (highlight < 0) highlight = 0;
+        break;
+      case KEY_DOWN:
+        highlight++;
+        if (highlight > choices.size()-1) highlight = choices.size()-1;
+        break;
+      default:
+        break;
+    }
+
+    if (choice == 10) break;
+  }
+  wclear(gameoverWin);
+  wrefresh(gameoverWin);
+  delwin(gameoverWin);
+  refresh();
+
+  if (highlight == 0) return true;
+  else return false;
+}
+
+bool Game::askResume()
+{
+  WINDOW* resumeWin = newwin(4, 21, 13, 20);
+  box(resumeWin, 0, 0);
+  wrefresh(resumeWin);
+
+  std::vector<std::string> choices = {"Resume", "Quit"};
+  int choice;
+  int highlight=0;
+
+  mvwprintw(resumeWin, 0, 3, "PAUSED");
+
+  while (1) {
+    for (int i=0; i<choices.size(); i++) {
+      if (i == highlight) wattron(resumeWin, A_REVERSE);
+      mvwprintw(resumeWin, i+1, 2, choices[i].c_str());
+      wattroff(resumeWin, A_REVERSE);
+    }
+    wrefresh(resumeWin);
+    nodelay(stdscr, false);
+    choice = getch();
+
+    switch(choice) {
+      case KEY_UP:
+        highlight--;
+        if (highlight < 0) highlight = 0;
+        break;
+      case KEY_DOWN:
+        highlight++;
+        if (highlight > choices.size()-1) highlight = choices.size()-1;
+        break;
+      default:
+        break;
+    }
+
+    if (choice == 10) break;
+  }
+  wclear(resumeWin);
+  wrefresh(resumeWin);
+  delwin(resumeWin);
+
+  if (highlight == 0) return true;
+  else return false;
 }

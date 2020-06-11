@@ -87,6 +87,9 @@ void run(bool debug)
     clear();
     refresh();
     Game snakeGame(debug);
-    while (snakeGame.start()){}
+    while (1){
+      bool restart = snakeGame.start();
+      if (!restart) break;
+    }
   }
 }
