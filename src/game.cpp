@@ -16,7 +16,7 @@ Game::Game(bool debug) : debug(debug)
   stageBoard = newwin(4, 30, 2, 62);
   scoreBoard = newwin(7, 30, 7, 62);
   missionBoard = newwin(7, 30, 16, 62);
-  fpsBoard = newwin(1,30, 0, 62);
+  fpsBoard = newwin(2,30, 0, 62);
   
   //box(mainBoard, 0, 0);
   box(stageBoard, 0, 0);
@@ -30,8 +30,9 @@ Game::Game(bool debug) : debug(debug)
   wrefresh(fpsBoard);
 
   if (debug) {
-    debugBoard = newwin(32, 32, 1, 93);
+    debugBoard = newwin(32, 32, 0, 93);
     box(debugBoard, 0, 0);
+    mvwprintw(fpsBoard, 1, 5, "DEBUG MODE");
     wrefresh(debugBoard);
   }
 
@@ -109,7 +110,7 @@ bool Game::start()
         else return false;
         break;
       default:
-        if (clock()-wait_time > 500000) {
+        if (clock()-wait_time > 500000) { //game ticks
           snake.movesnake();
           wait_time = clock();
         }
@@ -264,7 +265,7 @@ bool Game::askRestart()
   int choice;
   int highlight=0;
 
-  mvwprintw(gameoverWin, 0, 3, "GAME OVER");
+  mvwprintw(gameoverWin, 0, 6, "GAME OVER");
 
   while (1) {
     for (int i=0; i<choices.size(); i++) {
@@ -310,7 +311,7 @@ bool Game::askResume()
   int choice;
   int highlight=0;
 
-  mvwprintw(resumeWin, 0, 3, "PAUSED");
+  mvwprintw(resumeWin, 0, 7, "PAUSED");
 
   while (1) {
     for (int i=0; i<choices.size(); i++) {

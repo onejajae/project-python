@@ -39,16 +39,17 @@ class snakeClass {
     int snakesize;
     int snakemap[MAX_HEIGHT][MAX_WIDTH];
     int itemsum;
+
     snakePart gate[2];
+    snakePart growthItem[2];
+    snakePart poisonItem[2];
 
     std::vector<snakePart> wallvt;
     std::vector<snakePart> snake;
-    std::vector<snakePart> growthItem;
-    std::vector<snakePart> poisonItem;
 
     int sizeofsnake();
-    void putGrowthItem(); //몸 길이 증가 아이템
-    void putPoisonItem(); //독 아이템
+    void putGrowthItem(int n); //몸 길이 증가 아이템
+    void putPoisonItem(int n); //독 아이템
     void makegate(); // 게이트 생성
     bool collision(); //충돌
     void movesnake(int n=0); //뱀 움직이기

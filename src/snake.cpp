@@ -24,32 +24,33 @@ int snakeClass::sizeofsnake(){
   return snake.size();
 }
 
-void snakeClass::putGrowthItem() {
+void snakeClass::putGrowthItem(int n) {
   while(1) {
       int y=(rand()%(maxHeight-1)) +1;
       int x=(rand()%(maxWidth-1)) +1;
 
       if(snakemap[y][x]!=0) continue;
-      growthItem.push_back(snakePart(y,x));
+
+      growthItem[n].y = y;
+      growthItem[n].x = x;
       snakemap[y][x]=5;
-      itemsum++;
       break;
   }
 }
 
-void snakeClass::putPoisonItem() {
+void snakeClass::putPoisonItem(int n) {
   while(1) {
       int y=(rand()%(maxHeight-1)) +1;
       int x=(rand()%(maxWidth-1)) +1;
 
       if(snakemap[y][x]!=0) continue;
-      poisonItem.push_back(snakePart(y,x));
+
+      poisonItem[n].y = y;
+      poisonItem[n].x = x;
       snakemap[y][x]=6;
-      itemsum++;
       break;
   }
 }
-
 void snakeClass::makegate() {
   while(1){
     int tempa = rand()&wallvt.size();
@@ -78,11 +79,10 @@ bool snakeClass::collision() {
     }
 
     //growthItem 먹었을 때
-    for(int i=0; i<growthItem.size(); i++) {
+    for(int i=0; i<2; i++) {
         if(snake[0].x==growthItem[i].x && snake[0].y==growthItem[i].y) {
             getgrowth = true;
             points+=10;
-            itemsum--;
             break;
         }
         else {
@@ -91,11 +91,10 @@ bool snakeClass::collision() {
     }
 
     //poisonItem 먹었을 때
-    for(int i=0; i<poisonItem.size(); i++) {
+    for(int i=0; i<2; i++) {
         if(snake[0].x==poisonItem[i].x && snake[0].y==poisonItem[i].y) {
             getpoison = true;
             points-=10;
-            itemsum--;
             break;
         }
         else {
@@ -159,8 +158,8 @@ void snakeClass::movesnake(int n) {
       snakemap[snake.back().y][snake.back().x] = 0;
       snake.pop_back();
     }else{//먹엇을 때
-      for(int i =0; i<growthItem.size();i++){
-        if(growthItem[i].y==snake[0].y && growthItem[i].x==snake[0].x) growthItem.erase(growthItem.begin()+i);
+      for(int i =0; i<2;i++){
+        if(growthItem[i].y==snake[0].y && growthItem[i].x==snake[0].x) putGrowthItem(i);
       }
     }
 
@@ -168,24 +167,9 @@ void snakeClass::movesnake(int n) {
     if(getpoison){//먹었을 때
       snakemap[snake.back().y][snake.back().x] = 0;
       snake.pop_back();
-      for(int i =0; i<poisonItem.size();i++){
-        if(poisonItem[i].y==snake[0].y && poisonItem[i].x==snake[0].x) poisonItem.erase(growthItem.begin()+i);
+      for(int i =0; i<2;i++){
+        if(poisonItem[i].y==snake[0].y && poisonItem[i].x==snake[0].x) putPoisonItem(i);
       }
-    }
-
-    while(1){
-      if(itemsum<3){
-        int k=rand()%2;
-        switch (k) {
-          case 0:
-          putGrowthItem();
-          break;
-
-          case 1:
-          putPoisonItem();
-          break;
-        }
-      }else break;
     }
 }
 
@@ -266,19 +250,10 @@ snakeClass::snakeClass() {
     }
 
     //putitem
-    putGrowthItem();
-    for(int i=0; i<2; i++) {
-      int k=rand()%2;
-      switch (k) {
-        case 0:
-        putGrowthItem();
-        break;
-
-        case 1:
-        putPoisonItem();
-        break;
-      }
-    }
+    putGrowthItem(0);
+    putGrowthItem(1);
+    putPoisonItem(0);
+    putPoisonItem(1);
 
     makegate();
 
