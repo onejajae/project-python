@@ -24,6 +24,196 @@ int snakeClass::sizeofsnake(){
   return snake.size();
 }
 
+
+
+void snakeClass::meetgate(){
+  for(int i=0; i<2;i++){
+    for(int j=0; j<snake.size(); j++){
+      if(snake[j].y==gate[i].y && snake[j].x==gate[i].x){
+        if(j==0) gatestate =i;
+      }else{
+        gatestate =2;
+      }
+    }
+  }
+}
+
+void snakeClass::tpsnake(int n){
+  switch (n) {
+    case 0:
+      for(int i=0; i<snake.size();i++){
+        if(gate[0].y==snake[i].y && gate[0].x==snake[i].x){
+          switch (direction) {
+            case 'u':
+              if(snakemap[gate[1].y -1][gate[1].x]!=1 && snakemap[gate[1].y -1][gate[1].x]!=9){
+                snake[i].y = gate[1].y -1;
+                snake[i].x = gate[1].x;
+                direction = 'u';
+              }else if(snakemap[gate[1].y][gate[1].x +1]!=1 && snakemap[gate[1].y][gate[1].x +1]!=9){
+                snake[i].y = gate[1].y;
+                snake[i].x = gate[1].x +1;
+                direction = 'r';
+              }else if(snakemap[gate[0].y][gate[1].x -1]!=1 && snakemap[gate[1].y][gate[0].x -1]!=9){
+                snake[i].y = gate[1].y;
+                snake[i].x = gate[1].x -1;
+                direction = 'l';
+              }else{
+                snake[i].y = gate[1].y +1;
+                snake[i].x = gate[1].x;
+                direction = 'd';
+              }
+              break;
+            case 'd':
+              if(snakemap[gate[1].y +1][gate[1].x]!=1 && snakemap[gate[1].y +1][gate[1].x]!=9){
+                snake[i].y = gate[1].y +1;
+                snake[i].x = gate[1].x;
+                direction = 'd';
+              }else if(snakemap[gate[1].y][gate[1].x -1]!=1 && snakemap[gate[1].y][gate[1].x -1]!=9){
+                snake[i].y = gate[1].y;
+                snake[i].x = gate[1].x -1;
+                direction = 'l';
+              }else if(snakemap[gate[1].y][gate[1].x +1]!=1 && snakemap[gate[1].y][gate[1].x +1]!=9){
+                snake[i].y = gate[1].y;
+                snake[i].x = gate[1].x +1;
+                direction = 'r';
+              }else{
+                snake[i].y = gate[1].y -1;
+                snake[i].x = gate[1].x;
+                direction = 'u';
+              }
+              break;
+            case 'l':
+              if(snakemap[gate[1].y][gate[1].x-1]!=1 && snakemap[gate[1].y][gate[1].x -1]!=9){
+                snake[i].y = gate[1].y;
+                snake[i].x = gate[1].x -1;
+                direction = 'l';
+              }else if(snakemap[gate[1].y-1][gate[1].x]!=1 && snakemap[gate[1].y -1][gate[1].x]!=9){
+                snake[i].y = gate[1].y -1;
+                snake[i].x = gate[1].x ;
+                direction = 'u';
+              }else if(snakemap[gate[1].y +1][gate[1].x]!=1 && snakemap[gate[1].y +1][gate[1].x]!=9){
+                snake[i].y = gate[1].y +1;
+                snake[i].x = gate[1].x;
+                direction = 'd';
+              }else{
+                snake[i].y = gate[1].y;
+                snake[i].x = gate[1].x +1;
+                direction = 'r';
+              }
+              break;
+            case 'r':
+              if(snakemap[gate[1].y][gate[1].x +1]!=1 && snakemap[gate[1].y][gate[1].x +1]!=9){
+                snake[i].y = gate[1].y;
+                snake[i].x = gate[1].x +1;
+                direction = 'r';
+              }else if(snakemap[gate[1].y +1][gate[1].x]!=1 && snakemap[gate[1].y +1][gate[1].x]!=9){
+                snake[i].y = gate[1].y +1;
+                snake[i].x = gate[1].x ;
+                direction = 'd';
+              }else if(snakemap[gate[1].y -1][gate[1].x]!=1 && snakemap[gate[1].y -1][gate[1].x]!=9){
+                snake[i].y = gate[1].y -1;
+                snake[i].x = gate[1].x;
+                direction = 'u';
+              }else{
+                snake[i].y = gate[1].y;
+                snake[i].x = gate[1].x -1;
+                direction = 'l';
+              }
+              break;
+          }
+        }
+      }
+      break;
+    case 1:
+      for(int i=0; i<snake.size();i++){
+        if(gate[1].y==snake[i].y && gate[1].x==snake[i].x){
+          switch (direction) {
+            case 'u':
+              if(snakemap[gate[0].y -1][gate[0].x]!=1 && snakemap[gate[0].y -1][gate[0].x]!=9){
+                snake[i].y = gate[0].y -1;
+                snake[i].x = gate[0].x;
+                direction = 'u';
+              }else if(snakemap[gate[0].y][gate[0].x +1]!=1 && snakemap[gate[0].y][gate[0].x +1]!=9){
+                snake[i].y = gate[0].y;
+                snake[i].x = gate[0].x +1;
+                direction = 'r';
+              }else if(snakemap[gate[0].y][gate[0].x -1]!=1 && snakemap[gate[0].y][gate[0].x -1]!=9){
+                snake[i].y = gate[0].y;
+                snake[i].x = gate[0].x -1;
+                direction = 'l';
+              }else{
+                snake[i].y = gate[0].y +1;
+                snake[i].x = gate[0].x;
+                direction = 'd';
+              }
+              break;
+            case 'd':
+              if(snakemap[gate[0].y +1][gate[0].x]!=1 && snakemap[gate[0].y +1][gate[0].x]!=9){
+                snake[i].y = gate[0].y +1;
+                snake[i].x = gate[0].x;
+                direction = 'd';
+              }else if(snakemap[gate[0].y][gate[0].x -1]!=1 && snakemap[gate[0].y][gate[0].x -1]!=9){
+                snake[i].y = gate[0].y;
+                snake[i].x = gate[0].x -1;
+                direction = 'l';
+              }else if(snakemap[gate[0].y][gate[0].x +1]!=1 && snakemap[gate[0].y][gate[0].x +1]!=9){
+                snake[i].y = gate[0].y;
+                snake[i].x = gate[0].x +1;
+                direction = 'r';
+              }else{
+                snake[i].y = gate[0].y -1;
+                snake[i].x = gate[0].x;
+                direction = 'u';
+              }
+              break;
+            case 'l':
+              if(snakemap[gate[0].y][gate[0].x-1]!=1 && snakemap[gate[0].y][gate[0].x -1]!=9){
+                snake[i].y = gate[0].y;
+                snake[i].x = gate[0].x -1;
+                direction = 'l';
+              }else if(snakemap[gate[0].y-1][gate[0].x]!=1 && snakemap[gate[0].y -1][gate[0].x]!=9){
+                snake[i].y = gate[0].y -1;
+                snake[i].x = gate[0].x ;
+                direction = 'u';
+              }else if(snakemap[gate[0].y +1][gate[0].x]!=1 && snakemap[gate[0].y +1][gate[0].x]!=9){
+                snake[i].y = gate[0].y +1;
+                snake[i].x = gate[0].x;
+                direction = 'd';
+              }else{
+                snake[i].y = gate[0].y;
+                snake[i].x = gate[0].x +1;
+                direction = 'r';
+              }
+              break;
+            case 'r':
+              if(snakemap[gate[0].y][gate[0].x +1]!=1 && snakemap[gate[0].y][gate[0].x +1]!=9){
+                snake[i].y = gate[0].y;
+                snake[i].x = gate[0].x +1;
+                direction = 'r';
+              }else if(snakemap[gate[0].y +1][gate[0].x]!=1 && snakemap[gate[0].y +1][gate[0].x]!=9){
+                snake[i].y = gate[0].y +1;
+                snake[i].x = gate[0].x ;
+                direction = 'd';
+              }else if(snakemap[gate[0].y -1][gate[0].x]!=1 && snakemap[gate[0].y -1][gate[0].x]!=9){
+                snake[i].y = gate[0].y -1;
+                snake[i].x = gate[0].x;
+                direction = 'u';
+              }else{
+                snake[i].y = gate[0].y;
+                snake[i].x = gate[0].x -1;
+                direction = 'l';
+              }
+              break;
+          }
+        }
+      }
+      break;
+    case 2:
+      break;
+  }
+}
+
+
 void snakeClass::putGrowthItem(int n) {
   while(1) {
       int y=(rand()%(maxHeight-1)) +1;
@@ -51,10 +241,11 @@ void snakeClass::putPoisonItem(int n) {
       break;
   }
 }
+
 void snakeClass::makegate() {
   while(1){
-    int tempa = rand()&wallvt.size();
-    int tempb = rand()%wallvt.size();
+    int tempa = 1+rand()&wallvt.size()-2;
+    int tempb = 1+rand()%wallvt.size()-2;
     if(tempa==tempb) continue;
 
     gate[0] = wallvt[tempa];
@@ -66,10 +257,16 @@ void snakeClass::makegate() {
 }
 
 bool snakeClass::collision() {
+
+    meetgate();
+
     //벽에 머리가 부딪히는 경우
-    for(int i=0;i<wallvt.size();i++){
-      if(snake[0].x==wallvt[i].x && snake[0].y==wallvt[i].y) return true;
+    if(gatestate==2){
+      for(int i=0;i<wallvt.size();i++){
+        if(snake[0].x==wallvt[i].x && snake[0].y==wallvt[i].y) return true;
+      }
     }
+
 
     //자기 몸에 부딪히는 경우
     for(int i=2; i<snake.size(); i++) {
@@ -82,7 +279,7 @@ bool snakeClass::collision() {
     for(int i=0; i<2; i++) {
         if(snake[0].x==growthItem[i].x && snake[0].y==growthItem[i].y) {
             getgrowth = true;
-            points+=10;
+            //points+=10;
             break;
         }
         else {
@@ -94,7 +291,7 @@ bool snakeClass::collision() {
     for(int i=0; i<2; i++) {
         if(snake[0].x==poisonItem[i].x && snake[0].y==poisonItem[i].y) {
             getpoison = true;
-            points-=10;
+            //points-=10;
             break;
         }
         else {
@@ -109,6 +306,9 @@ bool snakeClass::collision() {
 }
 
 void snakeClass::movesnake(int n) {
+
+    if(gatestate==0) tpsnake(0);
+    else if(gatestate==1) tpsnake(1);
 
     switch (n)
     {
@@ -134,6 +334,11 @@ void snakeClass::movesnake(int n) {
         break;
     }
 
+    for(int i=0; i<2; i++){
+      if(growthItem[i].y == snake[0].y && growthItem[i].x == snake[0].x) putGrowthItem(i);
+      if(poisonItem[i].y == snake[0].y && poisonItem[i].x == snake[0].x) putPoisonItem(i);
+    }
+
     if(direction == 'l') {
       snake.insert(snake.begin(), snakePart(snake[0].y,snake[0].x-1));
     }
@@ -157,25 +362,28 @@ void snakeClass::movesnake(int n) {
     if(!getgrowth){//안 먹었을 때
       snakemap[snake.back().y][snake.back().x] = 0;
       snake.pop_back();
-    }else{//먹엇을 때
-      for(int i =0; i<2;i++){
-        if(growthItem[i].y==snake[0].y && growthItem[i].x==snake[0].x) putGrowthItem(i);
-      }
     }
 
     //poison아이템
     if(getpoison){//먹었을 때
       snakemap[snake.back().y][snake.back().x] = 0;
       snake.pop_back();
-      for(int i =0; i<2;i++){
-        if(poisonItem[i].y==snake[0].y && poisonItem[i].x==snake[0].x) putPoisonItem(i);
-      }
     }
+
+    updateScore();
+
 }
 
 snakeClass::snakeClass() {
     maxWidth = MAX_WIDTH;
     maxHeight = MAX_HEIGHT;
+
+    for(int k=0; k<=1; k++) {
+        growthItem[k].x = 0;
+        growthItem[k].y = 0;
+        poisonItem[k].x = 0;
+        poisonItem[k].y = 0;
+    }
 
     //배열 초기화
     for(int i=0; i<maxHeight; i++){
@@ -203,42 +411,64 @@ snakeClass::snakeClass() {
 
 
     snakesize = snake.size();
-    itemsum =0;
     points = 0;
+    sumpoisons = 0;
+    sumgrowth = 0;
+    sumgates = 0;
     ticks = 200000;
     getgrowth = false;
     getpoison = false;
+    gatestate = 2;
     direction ='l'; //default is left
     srand(time(NULL));
 
     //make Wall and immuneWall
     for(int j=0; j<maxWidth; j++) { //위
-      if(j==0||j==maxWidth-1) snakemap[0][j] = 2;
-      else {
-        snakemap[0][j] = 1;
-        wallvt.push_back(snakePart(0,j));
-      }
+      snakemap[0][j] = 9;
     }
     for(int j=0; j<maxWidth; j++) { //아래
-      if(j==0||j==maxWidth-1) snakemap[maxHeight-1][j]=2;
-      else {
-        snakemap[maxHeight-1][j]=1;
-        wallvt.push_back(snakePart(maxHeight-1,j));
-      }
+      snakemap[maxHeight-1][j]=9;
     }
     for(int i=0; i<maxHeight; i++) { //왼쪽
-      if(i==0||i==maxHeight-1) snakemap[i][0]=2;
-      else {
-        snakemap[i][0]=1;
-        wallvt.push_back(snakePart(i,0));
-      }
+      snakemap[i][0]=9;
     }
     for(int i=0; i<maxHeight; i++) { //오른쪽
-      if(i==0||i==maxHeight-1) {
-        snakemap[i][maxWidth-1] = 2;
+      snakemap[i][maxWidth-1] = 9;
+    }
+
+
+
+    //make wall and immuneWall
+    for(int j=1; j<maxWidth-1; j++) { //위
+      if(j==1||j==maxWidth-2) snakemap[1][j] = 2;
+      else {
+        snakemap[1][j] = 1;
+      }
+    }
+    for(int j=1; j<maxWidth-1; j++) { //아래
+      if(j==1||j==maxWidth-2) snakemap[maxHeight-2][j]=2;
+      else {
+        snakemap[maxHeight-2][j]=1;
+      }
+    }
+    for(int i=1; i<maxHeight-1; i++) { //왼쪽
+      if(i==1||i==maxHeight-2) snakemap[i][1]=2;
+      else {
+        snakemap[i][1]=1;
+      }
+    }
+    for(int i=1; i<maxHeight-1; i++) { //오른쪽
+      if(i==1||i==maxHeight-2) {
+        snakemap[i][maxWidth-2] = 2;
       }else {
-        snakemap[i][maxWidth-1] = 1;
-        wallvt.push_back(snakePart(i,maxWidth-1));
+        snakemap[i][maxWidth-2] = 1;
+      }
+    }
+
+
+    for(int y=0; y<maxHeight; y++){
+      for(int x=0; x<maxWidth; x++){
+        if(snakemap[y][x]==1) wallvt.push_back(snakePart(y,x));
       }
     }
 
@@ -260,4 +490,22 @@ snakeClass::snakeClass() {
 }
 
 snakeClass::~snakeClass() {
+}
+
+void snakeClass::updateScore()
+{
+  snakesize = sizeofsnake();
+  if (getgrowth) {
+    points += 10;
+    sumgrowth++;
+  }
+  if (getpoison) {\
+    sumpoisons++;
+  }
+}
+
+std::vector<int> snakeClass::getScore()
+{
+  std::vector<int> scores = {points, snakesize, sumgrowth, sumpoisons, sumgates};
+  return scores;
 }

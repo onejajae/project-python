@@ -90,26 +90,33 @@ bool Game::start()
     switch (input)
     {
       case KEY_LEFT:
+        if (debug) mvwprintw(fpsBoard, 1, 20, "L");
         snake.movesnake(TURN_LEFT);
-          wait_time = clock();
+        wait_time = clock();
         break;
       case KEY_UP:
+        if (debug) mvwprintw(fpsBoard, 1, 20, "U");
         snake.movesnake(TURN_UP);
-          wait_time = clock();
+        wait_time = clock();
         break;
       case KEY_DOWN:
+        if (debug) mvwprintw(fpsBoard, 1, 20, "D");
         snake.movesnake(TURN_DOWN);
         wait_time = clock();
         break;
       case KEY_RIGHT:
+        if (debug) mvwprintw(fpsBoard, 1, 20, "R");
         snake.movesnake(TURN_RIGHT);
-          wait_time = clock();
+        wait_time = clock();
         break;
       case KEY_BACKSPACE:
+      case ' ':
+        if (debug) mvwprintw(fpsBoard, 1, 20, "PAUSE");
         if (askResume()) nodelay(stdscr, true);
         else return false;
         break;
       default:
+        if (debug) mvwprintw(fpsBoard, 1, 20, "NONE");
         if (clock()-wait_time > 500000) { //game ticks
           snake.movesnake();
           wait_time = clock();
@@ -145,8 +152,8 @@ void Game::drawPoint(int y, int x, int TYPE)
 void Game::render()
 {
   if(debug) debug_snake();
-  for (int y=0; y<30; y++) {
-    for (int x=0; x<30; x++) {
+  for (int y=0; y<MAX_HEIGHT; y++) {
+    for (int x=0; x<MAX_WIDTH; x++) {
       switch (snake.snakemap[y][x])
       {
         case BLANK:
@@ -179,8 +186,8 @@ void Game::render()
 
 void Game::debug_snake()
 {
-  for (int y=0; y<30; y++) {
-    for (int x=0; x<30; x++) {
+  for (int y=0; y<MAX_HEIGHT; y++) {
+    for (int x=0; x<MAX_WIDTH; x++) {
       switch (snake.snakemap[y][x])
       {
         case BLANK:
@@ -216,43 +223,27 @@ void Game::debug_snake()
 
 void Game::updateBoard()
 {
+  std::vector<int> score = snake.getScore();
+
   mvwprintw(stageBoard, 1, 4, "STAGE %d", 1);
-  mvwprintw(stageBoard, 2, 4, "SCORE: %d", snake.points);
+  mvwprintw(stageBoard, 2, 4, "SCORE: %d", score[0]);
 
   mvwprintw(scoreBoard, 1, 10, "Score Board");
-  mvwprintw(scoreBoard, 2, 4, "B: %d / %d", 3, 20);
-  mvwprintw(scoreBoard, 3, 4, "+: %d", 5);
-  mvwprintw(scoreBoard, 4, 4, "-: %d", 5);
-  mvwprintw(scoreBoard, 5, 4, "G: %d", 5);
+  mvwprintw(scoreBoard, 2, 4, "B: %d", score[1]);
+  mvwprintw(scoreBoard, 3, 4, "+: %d", score[2]);
+  mvwprintw(scoreBoard, 4, 4, "-: %d", score[3]);
+  mvwprintw(scoreBoard, 5, 4, "G: %d", score[4]);
 
   mvwprintw(missionBoard, 1, 11, "Missions");
-  mvwprintw(missionBoard, 2, 4, "B: %d", 3/20);
-  mvwprintw(missionBoard, 3, 4, "+: %d", 5);
-  mvwprintw(missionBoard, 4, 4, "-: %d", 5);
-  mvwprintw(missionBoard, 5, 4, "G: %d", 5);
+  mvwprintw(missionBoard, 2, 4, "B: %d / %d", score[1], 20);
+  mvwprintw(missionBoard, 3, 4, "+: %d / %d", score[2], 10);
+  mvwprintw(missionBoard, 4, 4, "-: %d / %d", score[3], 10);
+  mvwprintw(missionBoard, 5, 4, "G: %d / %d", score[4], 5);
 
   wrefresh(stageBoard);
   wrefresh(scoreBoard);
   wrefresh(missionBoard);
 
-  // mvwprintw(stageBoard, 1, 4, "STAGE %d", stage);
-  // mvwprintw(stageBoard, 2, 4, "SCORE: %d", score);
-
-  // mvwprintw(scoreBoard, 1, 1, "Score Board");
-  // mvwprintw(scoreBoard, 2, 1, "B: %d / %d", currentLength, maxLength);
-  // mvwprintw(scoreBoard, 3, 1, "+: %d", grows);
-  // mvwprintw(scoreBoard, 4, 1, "-: %d", poisons);
-  // mvwprintw(scoreBoard, 5, 1, "G: %d", gates);
-
-  // mvwprintw(missionBoard, 1, 1, "Missions");
-  // mvwprintw(missionBoard, 2, 1, "B: %d", currentLength/maxLength);
-  // mvwprintw(missionBoard, 3, 1, "+: %d", grows);
-  // mvwprintw(missionBoard, 4, 1, "-: %d", poisons);
-  // mvwprintw(missionBoard, 5, 1, "G: %d", gates);
-
-  // wrefresh(stageBoard);
-  // wrefresh(scoreBoard);
-  // wrefresh(missionBoard);
 }
 
 bool Game::askRestart()
