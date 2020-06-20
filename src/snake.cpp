@@ -470,15 +470,15 @@ void snakeClass::newStage(int stageNum)
 
 
   snakesize = snake.size();
-  points = 0;
   sumpoisons = 0;
   sumgrowth = 0;
   sumgates = 0;
-  ticks = 200000;
   getgrowth = false;
   getpoison = false;
   gatestate = 2;
   direction ='l'; //default is left
+
+  points += (stageNum-1)*2000;
 
   //putitem
   putGrowthItem(0);
