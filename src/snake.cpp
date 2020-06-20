@@ -250,10 +250,17 @@ void snakeClass::makegate() {
 
     gate[0] = wallvt[tempa];
     gate[1] = wallvt[tempb];
+
+    if (snakemap[gate[0].y][gate[0].x] == IMMNUNE_WALL) continue;
+    if (snakemap[gate[1].y][gate[1].x] == IMMNUNE_WALL) continue;
+
     snakemap[gate[0].y][gate[0].x] = 7;
     snakemap[gate[1].y][gate[1].x] = 7;
     break;
   }
+  // for (int i=0; i<wallvt.size(); i++) if (gate[0].x == wallvt[i].x && gate[0].y == wallvt[i].y) wallvt.erase(wallvt.begin()+i);
+  // for (int i=0; i<wallvt.size(); i++) if (gate[1].x == wallvt[i].x && gate[1].y == wallvt[i].y) wallvt.erase(wallvt.begin()+i);
+  
 }
 
 bool snakeClass::collision() {
@@ -378,116 +385,11 @@ snakeClass::snakeClass() {
     maxWidth = MAX_WIDTH;
     maxHeight = MAX_HEIGHT;
 
-    for(int k=0; k<=1; k++) {
-        growthItem[k].x = 0;
-        growthItem[k].y = 0;
-        poisonItem[k].x = 0;
-        poisonItem[k].y = 0;
-    }
-
-    //배열 초기화
-    for(int i=0; i<maxHeight; i++){
-      for(int j=0; j<maxWidth; j++){
-        snakemap[i][j] = 0;
-      }
-    }
-
-    //아이템개수 초기화
-
-    // //맵, 뱀 모양 초기화
-    // airchar = ' ';
-    // headPartchar = 'o';
-    // bodyPartchar = '*';
-    // wallchar = '§';
-    // immuneWallchar = '#';
-    // growthItemchar = 'O';
-    // poisonItemchar = 'X';
-    // gatechar = '0';
-
-    //snake 생성
-    for(int i=0; i<3; i++) {
-        snake.push_back(snakePart(maxHeight/2, maxWidth/2+i));
-    }
-
-
-    snakesize = snake.size();
     points = 0;
-    sumpoisons = 0;
-    sumgrowth = 0;
-    sumgates = 0;
-    ticks = 200000;
-    getgrowth = false;
-    getpoison = false;
-    gatestate = 2;
-    direction ='l'; //default is left
+
     srand(time(NULL));
-
-    //make Wall and immuneWall
-    for(int j=0; j<maxWidth; j++) { //위
-      snakemap[0][j] = 9;
-    }
-    for(int j=0; j<maxWidth; j++) { //아래
-      snakemap[maxHeight-1][j]=9;
-    }
-    for(int i=0; i<maxHeight; i++) { //왼쪽
-      snakemap[i][0]=9;
-    }
-    for(int i=0; i<maxHeight; i++) { //오른쪽
-      snakemap[i][maxWidth-1] = 9;
-    }
-
-
-
-    //make wall and immuneWall
-    for(int j=1; j<maxWidth-1; j++) { //위
-      if(j==1||j==maxWidth-2) snakemap[1][j] = 2;
-      else {
-        snakemap[1][j] = 1;
-      }
-    }
-    for(int j=1; j<maxWidth-1; j++) { //아래
-      if(j==1||j==maxWidth-2) snakemap[maxHeight-2][j]=2;
-      else {
-        snakemap[maxHeight-2][j]=1;
-      }
-    }
-    for(int i=1; i<maxHeight-1; i++) { //왼쪽
-      if(i==1||i==maxHeight-2) snakemap[i][1]=2;
-      else {
-        snakemap[i][1]=1;
-      }
-    }
-    for(int i=1; i<maxHeight-1; i++) { //오른쪽
-      if(i==1||i==maxHeight-2) {
-        snakemap[i][maxWidth-2] = 2;
-      }else {
-        snakemap[i][maxWidth-2] = 1;
-      }
-    }
-
-
-    for(int y=0; y<maxHeight; y++){
-      for(int x=0; x<maxWidth; x++){
-        if(snakemap[y][x]==1) wallvt.push_back(snakePart(y,x));
-      }
-    }
-
-
-    //make snake
-    for(int i=0; i<snake.size(); i++) {
-        if(i == 0) snakemap[snake[i].y][snake[i].x] = 3;
-        else snakemap[snake[i].y][snake[i].x] = 4;
-    }
-
-    //putitem
-    putGrowthItem(0);
-    putGrowthItem(1);
-    putPoisonItem(0);
-    putPoisonItem(1);
-
-    makegate();
-
 }
+
 
 snakeClass::~snakeClass() {
 }
@@ -499,7 +401,7 @@ void snakeClass::updateScore()
     points += 10;
     sumgrowth++;
   }
-  if (getpoison) {\
+  if (getpoison) {
     sumpoisons++;
   }
 }
@@ -508,4 +410,70 @@ std::vector<int> snakeClass::getScore()
 {
   std::vector<int> scores = {points, snakesize, sumgrowth, sumpoisons, sumgates};
   return scores;
+}
+
+bool snakeClass::isMissionComplete()
+{
+  if (snakesize < stage.mission_maxLength) return false;
+  if (sumgrowth < stage.mission_maxGrowth) return false;
+  if (sumpoisons < stage.mission_maxPoison) return false;
+  if (sumgates < stage.mission_maxGates) return false;
+
+  return true;
+}
+
+void snakeClass::newStage(int stageNum)
+{
+  sumgrowth = 0;
+  sumpoisons = 0;
+  sumgates = 0;
+
+  snake.clear();
+  wallvt.clear();
+
+  stage.newStage(stageNum);
+
+  // 맵 데이터 깊은 복사
+  for (int y=0; y<MAX_HEIGHT; y++) {
+    for (int x=0; x<MAX_WIDTH; x++) {
+      snakemap[y][x] = stage.mapArr[y][x];
+    }
+  }
+  //snake 생성
+  for(int i=0; i<3; i++) {
+      snake.push_back(snakePart(maxHeight/2, maxWidth/2+i));
+  }
+
+  // 벽 목록 생성
+  for(int y=0; y<MAX_HEIGHT; y++){
+    for(int x=0; x<MAX_WIDTH; x++){
+      if(snakemap[y][x]==1) wallvt.push_back(snakePart(y,x));
+    }
+  }
+
+  //make snake
+  for(int i=0; i<snake.size(); i++) {
+    if(i == 0) snakemap[snake[i].y][snake[i].x] = 3;
+    else snakemap[snake[i].y][snake[i].x] = 4;
+  }
+
+
+  snakesize = snake.size();
+  points = 0;
+  sumpoisons = 0;
+  sumgrowth = 0;
+  sumgates = 0;
+  ticks = 200000;
+  getgrowth = false;
+  getpoison = false;
+  gatestate = 2;
+  direction ='l'; //default is left
+
+  //putitem
+  putGrowthItem(0);
+  putGrowthItem(1);
+  putPoisonItem(0);
+  putPoisonItem(1);
+
+  makegate();
 }

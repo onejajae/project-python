@@ -5,6 +5,8 @@
 #include <vector>
 #include <cstdlib>
 
+#include "stage.h"
+
 #define TURN_LEFT 1
 #define TURN_UP 2
 #define TURN_DOWN 3
@@ -59,6 +61,10 @@ class snakeClass {
     void movesnake(int n=0); //뱀 움직이기
     void updateScore();
     std::vector<int> getScore();
+    bool isMissionComplete();
+    void newStage(int);
+    
+    Stage stage;
 
     public:
         snakeClass();

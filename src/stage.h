@@ -9,13 +9,6 @@
 
 class Stage
 {
-  private:
-    int stageNum;
-    int mission_maxLength;
-    int mission_maxGrowth;
-    int mission_maxPoison;
-    int mission_maxGates;
-
   protected:
     void loadStageFile(const std::string& stageFileName);
 
@@ -27,8 +20,13 @@ class Stage
     std::vector<int> getMission();
 
     void newStage(int newStageNum);
-    
 
+    int stageNum;
+    int mission_maxLength;
+    int mission_maxGrowth;
+    int mission_maxPoison;
+    int mission_maxGates;
+    
 };
 
 #endif

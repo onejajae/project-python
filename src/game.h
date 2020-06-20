@@ -20,7 +20,7 @@ class Game
     Game(bool debug=false);
     ~Game();
 
-    bool start(); // main game loop
+    bool start(int startStageNum=1); // main game loop
     void render(); //draw game screen
     void drawPoint(int, int, int); // x, y are indexes of snake array
     void debug_snake();
