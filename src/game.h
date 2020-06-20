@@ -29,8 +29,6 @@ class Game
 
     bool askRestart();
     bool askResume();
-
-    const char WALL_CHAR = (char)219;
 };
 
 #endif
