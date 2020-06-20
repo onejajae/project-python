@@ -185,8 +185,11 @@ void Game::render()
   }
 
   // 게이트 사용 후 임시조치
-  for (int i=0; i<2; i++) {
-    drawPoint(snake.gate[i].y, snake.gate[i].x, GATE);
+  for (int i=0; i<2; i++) drawPoint(snake.gate[i].y, snake.gate[i].x, GATE);
+  for (int i=0; i<MAX_HEIGHT; i++) {
+    for (int j=0; j<MAX_WIDTH; j++) {
+      if (i == 0 || j == 0 || i == MAX_HEIGHT-1 || j == MAX_WIDTH-1) drawPoint(i, j, 8);
+    }
   }
 
   wrefresh(mainBoard);

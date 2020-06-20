@@ -34,8 +34,7 @@ struct snakePart
 class snakeClass {
     public:
     int points, delay, maxWidth, maxHeight;
-    char direction, headPartchar, bodyPartchar, wallchar, immuneWallchar,
-    growthItemchar, poisonItemchar, gatechar, airchar;
+    char direction;
     bool getgrowth, getpoison, ingate;
     int ticks;
     int snakesize;

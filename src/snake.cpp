@@ -1,13 +1,6 @@
 #include <random>
 #include "snake.h"
 
-/*
-TODO LIST
--make a menu
--top list ??
--colors 구현
--Immune Wall 구현
-*/
 
 //constructor
 snakePart::snakePart(int row, int col) {
@@ -24,19 +17,6 @@ int snakeClass::sizeofsnake(){
   return snake.size();
 }
 
-
-
-// void snakeClass::meetgate(){
-//   for(int i=0; i<2;i++){
-//     for(int j=0; j<snake.size(); j++){
-//       if(snake[j].y==gate[i].y && snake[j].x==gate[i].x){
-//         if(j==0) gatestate =i;
-//       }else{
-//         gatestate =2;
-//       }
-//     }
-//   }
-// }
 
 //게이트에 있는 뱀를 다른 게이트에서 나가야하는 방향에 있는 좌표로 이동시켜준다.
 void snakeClass::tpsnake(int n){ //인자로 gatestate를 받는다 만약 1이 인자로 들어왔을 경우 1번게이트에 뱀이 있는 경우로 판단
