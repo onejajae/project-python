@@ -69,7 +69,6 @@ class snakeClass {
     public:
         snakeClass();
         ~snakeClass();
-        void start(); // start game
 };
 
 #endif
