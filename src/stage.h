@@ -26,6 +26,7 @@ class Stage
     int mission_maxGrowth;
     int mission_maxPoison;
     int mission_maxGates;
+    int stage_tick;
     
 };
 

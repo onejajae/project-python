@@ -26,38 +26,39 @@ int snakeClass::sizeofsnake(){
 
 
 
-void snakeClass::meetgate(){
-  for(int i=0; i<2;i++){
-    for(int j=0; j<snake.size(); j++){
-      if(snake[j].y==gate[i].y && snake[j].x==gate[i].x){
-        if(j==0) gatestate =i;
-      }else{
-        gatestate =2;
-      }
-    }
-  }
-}
+// void snakeClass::meetgate(){
+//   for(int i=0; i<2;i++){
+//     for(int j=0; j<snake.size(); j++){
+//       if(snake[j].y==gate[i].y && snake[j].x==gate[i].x){
+//         if(j==0) gatestate =i;
+//       }else{
+//         gatestate =2;
+//       }
+//     }
+//   }
+// }
 
-void snakeClass::tpsnake(int n){
+//게이트에 있는 뱀를 다른 게이트에서 나가야하는 방향에 있는 좌표로 이동시켜준다.
+void snakeClass::tpsnake(int n){ //인자로 gatestate를 받는다 만약 1이 인자로 들어왔을 경우 1번게이트에 뱀이 있는 경우로 판단
   switch (n) {
-    case 0:
+    case 0: //0번 게이트에 뱀이 들어있는경우
       for(int i=0; i<snake.size();i++){
         if(gate[0].y==snake[i].y && gate[0].x==snake[i].x){
-          switch (direction) {
-            case 'u':
-              if(snakemap[gate[1].y -1][gate[1].x]!=1 && snakemap[gate[1].y -1][gate[1].x]!=9){
+          switch (direction) { //뱀의 원래 방향에 따라 어느 방향을 우선으로 나갈지 정함
+            case 'u': // 만약 뱀이 게이트 진입시 방향이 u이였다면 위, 오른쪽, 왼쪽 ,아래를 순서대로 탐색해 먼저 가능한 곳으로 나가고 뱀의 방향을 다시 설정해준다.
+              if(snakemap[gate[1].y -1][gate[1].x]!=1 && snakemap[gate[1].y -1][gate[1].x]!=9){ //만약 나가야하는 게이트의 위 방향이 벽이 아니라면 게이트 안에 있는 snake의 좌표를 바꿔준다.
                 snake[i].y = gate[1].y -1;
                 snake[i].x = gate[1].x;
                 direction = 'u';
-              }else if(snakemap[gate[1].y][gate[1].x +1]!=1 && snakemap[gate[1].y][gate[1].x +1]!=9){
+              }else if(snakemap[gate[1].y][gate[1].x +1]!=1 && snakemap[gate[1].y][gate[1].x +1]!=9){ //만약 나가야하는 게이트의 오른쪽 방향이 벽이 아니라면 게이트 안에 있는 snake의 좌표를 바꿔준다.
                 snake[i].y = gate[1].y;
                 snake[i].x = gate[1].x +1;
                 direction = 'r';
-              }else if(snakemap[gate[0].y][gate[1].x -1]!=1 && snakemap[gate[1].y][gate[0].x -1]!=9){
+              }else if(snakemap[gate[0].y][gate[1].x -1]!=1 && snakemap[gate[1].y][gate[0].x -1]!=9){ //만약 나가야하는 게이트의 왼쪽 방향이 벽이 아니라면 게이트 안에 있는 snake의 좌표를 바꿔준다.
                 snake[i].y = gate[1].y;
                 snake[i].x = gate[1].x -1;
                 direction = 'l';
-              }else{
+              }else{ //만약 나가야하는 게이트의 아래 방향이 벽이 아니라면 게이트 안에 있는 snake의 좌표를 바꿔준다.
                 snake[i].y = gate[1].y +1;
                 snake[i].x = gate[1].x;
                 direction = 'd';
@@ -246,32 +247,29 @@ void snakeClass::makegate() {
   while(1){
     int tempa = 1+rand()&wallvt.size()-2;
     int tempb = 1+rand()%wallvt.size()-2;
-    if(tempa==tempb) continue;
+    if(tempa==tempb) continue; //만약 생선된 두 변 수가 같다면 루프를 다시 수행
 
-    gate[0] = wallvt[tempa];
-    gate[1] = wallvt[tempb];
+    gate[0] = wallvt[tempa]; //벽 벡터에 들어있는 원소 하나를 게이트로 선언
+    gate[1] = wallvt[tempb]; //벽 벡터에 들어있는 원소 하나를 게이트로 선언
 
-    if (snakemap[gate[0].y][gate[0].x] == IMMNUNE_WALL) continue;
-    if (snakemap[gate[1].y][gate[1].x] == IMMNUNE_WALL) continue;
-
-    snakemap[gate[0].y][gate[0].x] = 7;
+    wallvt[tempa] = snakePart(-1,-1);//게이트로 지정된 벽 벡터의 원소를 뱀이 도달할 수 없는 곳인 -1,-1로 변경(후에 충돌 함수에서 벽에 부딪히지 않게 판정되게 위해서)
+    wallvt[tempb] = snakePart(-1,-1);
+    snakemap[gate[0].y][gate[0].x] = 7; // snakemap에서 gate부분의 배열을 7로 비꿔준다.
     snakemap[gate[1].y][gate[1].x] = 7;
     break;
   }
-  // for (int i=0; i<wallvt.size(); i++) if (gate[0].x == wallvt[i].x && gate[0].y == wallvt[i].y) wallvt.erase(wallvt.begin()+i);
-  // for (int i=0; i<wallvt.size(); i++) if (gate[1].x == wallvt[i].x && gate[1].y == wallvt[i].y) wallvt.erase(wallvt.begin()+i);
-  
 }
 
 bool snakeClass::collision() {
 
-    meetgate();
+    for(int i =0 ; i < snake.size(); i++){
+      if(gate[0].y == snake[i].y && gate[0].x == snake[i].x) gatestate = 0; //snake벡터 내부를 돌면서 0번 게이트와 snake가 만났다면 게이트의 상태 변수를 0으로 바꿔준다.
+      if(gate[1].y == snake[i].y && gate[1].x == snake[i].x) gatestate = 1; //snake벡터 내부를 돌면서 1번 게이트와 snake가 만났다면 게이트의 상태 변수를 1으로 바꿔준다.
+    }
 
     //벽에 머리가 부딪히는 경우
-    if(gatestate==2){
-      for(int i=0;i<wallvt.size();i++){
-        if(snake[0].x==wallvt[i].x && snake[0].y==wallvt[i].y) return true;
-      }
+    for(int i=0;i<wallvt.size();i++){
+      if(snake[0].x==wallvt[i].x && snake[0].y==wallvt[i].y) return true;
     }
 
 
@@ -286,7 +284,6 @@ bool snakeClass::collision() {
     for(int i=0; i<2; i++) {
         if(snake[0].x==growthItem[i].x && snake[0].y==growthItem[i].y) {
             getgrowth = true;
-            //points+=10;
             break;
         }
         else {
@@ -298,12 +295,22 @@ bool snakeClass::collision() {
     for(int i=0; i<2; i++) {
         if(snake[0].x==poisonItem[i].x && snake[0].y==poisonItem[i].y) {
             getpoison = true;
-            //points-=10;
             break;
         }
         else {
             getpoison = false;
         }
+    }
+
+    //gate 사용할 때
+    for (int i=0; i<2; i++) {
+      if (snake[0].x == gate[i].x && snake[0].y == gate[i].y) {
+        ingate = true;
+        break;
+      }
+      else {
+        ingate = false;
+      }
     }
 
     //뱀의 몸의 길이가 3보다 작아질 경우
@@ -403,6 +410,10 @@ void snakeClass::updateScore()
   }
   if (getpoison) {
     sumpoisons++;
+  }
+
+  if (ingate) {
+    sumgates++;
   }
 }
 

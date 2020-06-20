@@ -119,7 +119,7 @@ bool Game::start(int startStageNum)
         break;
       default:
         if (debug) mvwprintw(fpsBoard, 1, 20, "NONE");
-        if (clock()-wait_time > 500000) { //game ticks
+        if (clock()-wait_time > snake.stage.stage_tick) { //game ticks
           snake.movesnake();
           wait_time = clock();
         }
@@ -183,6 +183,12 @@ void Game::render()
       }
     }
   }
+
+  // 게이트 사용 후 임시조치
+  for (int i=0; i<2; i++) {
+    drawPoint(snake.gate[i].y, snake.gate[i].x, GATE);
+  }
+
   wrefresh(mainBoard);
 }
 
@@ -230,20 +236,20 @@ void Game::updateBoard()
 {
   std::vector<int> score = snake.getScore();
 
-  mvwprintw(stageBoard, 1, 4, "STAGE %d", snake.stage.stageNum);
-  mvwprintw(stageBoard, 2, 4, "SCORE: %d", score[0]);
+  mvwprintw(stageBoard, 1, 4, "STAGE %d       ", snake.stage.stageNum);
+  mvwprintw(stageBoard, 2, 4, "SCORE: %d      ", score[0]);
 
   mvwprintw(scoreBoard, 1, 10, "Score Board");
-  mvwprintw(scoreBoard, 2, 4, "B: %d", score[1]);
-  mvwprintw(scoreBoard, 3, 4, "+: %d", score[2]);
-  mvwprintw(scoreBoard, 4, 4, "-: %d", score[3]);
-  mvwprintw(scoreBoard, 5, 4, "G: %d", score[4]);
+  mvwprintw(scoreBoard, 2, 4, "B: %d       ", score[1]);
+  mvwprintw(scoreBoard, 3, 4, "+: %d       ", score[2]);
+  mvwprintw(scoreBoard, 4, 4, "-: %d       ", score[3]);
+  mvwprintw(scoreBoard, 5, 4, "G: %d       ", score[4]);
 
   mvwprintw(missionBoard, 1, 11, "Missions");
-  mvwprintw(missionBoard, 2, 4, "B: %d / %d", score[1], snake.stage.mission_maxLength);
-  mvwprintw(missionBoard, 3, 4, "+: %d / %d", score[2], snake.stage.mission_maxGrowth);
-  mvwprintw(missionBoard, 4, 4, "-: %d / %d", score[3], snake.stage.mission_maxPoison);
-  mvwprintw(missionBoard, 5, 4, "G: %d / %d", score[4], snake.stage.mission_maxGates);
+  mvwprintw(missionBoard, 2, 4, "B: %d / %d       ", score[1], snake.stage.mission_maxLength);
+  mvwprintw(missionBoard, 3, 4, "+: %d / %d       ", score[2], snake.stage.mission_maxGrowth);
+  mvwprintw(missionBoard, 4, 4, "-: %d / %d       ", score[3], snake.stage.mission_maxPoison);
+  mvwprintw(missionBoard, 5, 4, "G: %d / %d       ", score[4], snake.stage.mission_maxGates);
 
   wrefresh(stageBoard);
   wrefresh(scoreBoard);

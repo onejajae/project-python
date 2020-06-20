@@ -33,6 +33,7 @@ void Stage::loadStageFile(const std::string& stageFileName)
     stageFile >> mission_maxGrowth;
     stageFile >> mission_maxPoison;
     stageFile >> mission_maxGates;
+    stageFile >> stage_tick;
   }
 
   stageFile.close();

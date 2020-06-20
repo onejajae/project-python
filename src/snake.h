@@ -51,7 +51,7 @@ class snakeClass {
     std::vector<snakePart> wallvt;
     std::vector<snakePart> snake;
 
-    void meetgate();
+    //void meetgate();
     int sizeofsnake();
     void tpsnake(int n);
     void putGrowthItem(int n); //몸 길이 증가 아이템
